@@ -23,6 +23,8 @@ import se.kth.karamel.backend.launcher.google.GceContext;
 import se.kth.karamel.backend.launcher.google.GceLauncher;
 import se.kth.karamel.backend.launcher.nova.NovaContext;
 import se.kth.karamel.backend.launcher.nova.NovaLauncher;
+import se.kth.karamel.backend.launcher.occi.OcciContext;
+import se.kth.karamel.backend.launcher.occi.OcciLauncher;
 import se.kth.karamel.backend.running.model.ClusterRuntime;
 import se.kth.karamel.backend.running.model.GroupRuntime;
 import se.kth.karamel.backend.running.model.MachineRuntime;
@@ -45,14 +47,17 @@ import se.kth.karamel.common.cookbookmeta.KaramelFile;
 import se.kth.karamel.common.cookbookmeta.KaramelFileYamlDeps;
 import se.kth.karamel.common.cookbookmeta.KaramelizedCookbook;
 import se.kth.karamel.common.exception.InvalidNovaCredentialsException;
+import se.kth.karamel.common.exception.InvalidOcciCredentialsException;
 import se.kth.karamel.common.exception.KaramelException;
 import se.kth.karamel.common.util.Confs;
 import se.kth.karamel.common.util.Ec2Credentials;
 import se.kth.karamel.common.util.NovaCredentials;
+import se.kth.karamel.common.util.OcciCredentials;
 import se.kth.karamel.common.util.Settings;
 import se.kth.karamel.common.util.SshKeyPair;
 import se.kth.karamel.common.util.SshKeyService;
 import se.kth.karamel.common.util.settings.NovaSetting;
+import se.kth.karamel.common.util.settings.OcciSetting;
 
 import java.io.File;
 import java.io.IOException;
@@ -170,6 +175,24 @@ public class KaramelApiImpl implements KaramelApi {
     confs.put(NovaSetting.NOVA_REGION.getParameter(), credentials.getRegion());
     confs.writeKaramelConfs();
     clusterService.registerNovaContext(context);
+    return true;
+  }
+  
+  @Override
+  public OcciCredentials loadOcciCredentialsIfExist() throws KaramelException {
+    Confs confs = Confs.loadKaramelConfs();
+    return OcciLauncher.readCredentials(confs);
+  }
+
+  @Override
+  public boolean updateOcciCredentialsIfValid(OcciCredentials credentials) throws InvalidOcciCredentialsException {
+    OcciContext context = OcciLauncher.validateCredentials(credentials);
+    Confs confs = Confs.loadKaramelConfs();
+    confs.put(OcciSetting.OCCI_USER_CERTIFICATE_PATH.getParameter(), credentials.getUserCertificatePath());
+    confs.put(OcciSetting.OCCI_CERTIFICATE_DIR.getParameter(), credentials.getSystemCertDir());
+    //confs.put(OcciSetting.OCCI_ENDPOINT.getParameter(), credentials.getEndpoint());
+    confs.writeKaramelConfs();
+    clusterService.registerOcciContext(context);
     return true;
   }
 

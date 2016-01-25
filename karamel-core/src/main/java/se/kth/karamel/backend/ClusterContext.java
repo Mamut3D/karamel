@@ -10,9 +10,11 @@ import se.kth.karamel.backend.github.GithubApi;
 import se.kth.karamel.backend.launcher.amazon.Ec2Context;
 import se.kth.karamel.backend.launcher.google.GceContext;
 import se.kth.karamel.backend.launcher.nova.NovaContext;
+import se.kth.karamel.backend.launcher.occi.OcciContext;
 import se.kth.karamel.common.clusterdef.Ec2;
 import se.kth.karamel.common.clusterdef.Gce;
 import se.kth.karamel.common.clusterdef.Nova;
+import se.kth.karamel.common.clusterdef.Occi;
 import se.kth.karamel.common.clusterdef.Provider;
 import se.kth.karamel.common.clusterdef.json.JsonCluster;
 import se.kth.karamel.common.clusterdef.json.JsonGroup;
@@ -29,6 +31,7 @@ public class ClusterContext {
   private GceContext gceContext;
   private SshKeyPair sshKeyPair;
   private NovaContext novaContext;
+  private OcciContext occiContext;
   private String sudoAccountPassword = "";
 
   public void setSudoAccountPassword(String sudoAccountPassword) {
@@ -73,6 +76,9 @@ public class ClusterContext {
     if (novaContext == null) {
       novaContext = commonContext.getNovaContext();
     }
+    if (occiContext == null) {
+      occiContext = commonContext.getOcciContext();
+    }
   }
 
   public static ClusterContext validateContext(JsonCluster definition,
@@ -90,6 +96,8 @@ public class ClusterContext {
         throw new KaramelException("No valid Gce credentials registered :-|");
       } else if (provider instanceof Nova && context.getNovaContext() == null){
         throw new KaramelException("No valid Nova credentials registered :-|");
+      } else if (provider instanceof Occi && context.getOcciContext() == null){
+        throw new KaramelException("No valid Occi credentials registered :-|");
       }
     }
 
@@ -120,4 +128,13 @@ public class ClusterContext {
   public NovaContext getNovaContext() {
     return novaContext;
   }
+  
+  public void setOcciContext(OcciContext occiContext) {
+    this.occiContext = occiContext;
+  }
+
+  public OcciContext getOcciContext() {
+    return occiContext;
+  }
+  
 }

@@ -13,6 +13,7 @@ import se.kth.karamel.backend.github.RepoItem;
 import se.kth.karamel.common.exception.KaramelException;
 import se.kth.karamel.common.util.Ec2Credentials;
 import se.kth.karamel.common.util.NovaCredentials;
+import se.kth.karamel.common.util.OcciCredentials;
 import se.kth.karamel.common.util.SshKeyPair;
 
 import java.util.List;
@@ -299,4 +300,8 @@ public interface KaramelApi {
   public NovaCredentials loadNovaCredentialsIfExist() throws KaramelException;
 
   public boolean updateNovaCredentialsIfValid(NovaCredentials credentials) throws KaramelException;
+  
+  public OcciCredentials loadOcciCredentialsIfExist() throws KaramelException;
+
+  public boolean updateOcciCredentialsIfValid(OcciCredentials credentials) throws KaramelException;
 }
